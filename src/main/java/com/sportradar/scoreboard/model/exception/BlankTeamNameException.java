@@ -1,4 +1,4 @@
-package com.sportradar.scoreboard.exception;
+package com.sportradar.scoreboard.model.exception;
 
 public class BlankTeamNameException extends IllegalArgumentException {
     public BlankTeamNameException() {

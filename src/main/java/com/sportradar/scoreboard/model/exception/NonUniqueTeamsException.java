@@ -1,4 +1,4 @@
-package com.sportradar.scoreboard.exception;
+package com.sportradar.scoreboard.model.exception;
 
 public class NonUniqueTeamsException extends RuntimeException {
     public NonUniqueTeamsException() {

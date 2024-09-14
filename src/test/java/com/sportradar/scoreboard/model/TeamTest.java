@@ -1,6 +1,6 @@
 package com.sportradar.scoreboard.model;
 
-import com.sportradar.scoreboard.exception.BlankTeamNameException;
+import com.sportradar.scoreboard.model.exception.BlankTeamNameException;
 import com.sportradar.scoreboard.model.testutils.InvalidInputTC;
 import com.sportradar.scoreboard.model.testutils.ValidInputTC;
 import org.junit.jupiter.api.DynamicTest;

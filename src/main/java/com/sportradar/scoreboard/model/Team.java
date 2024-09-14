@@ -1,6 +1,6 @@
 package com.sportradar.scoreboard.model;
 
-import com.sportradar.scoreboard.exception.BlankTeamNameException;
+import com.sportradar.scoreboard.model.exception.BlankTeamNameException;
 
 import java.util.UUID;
 

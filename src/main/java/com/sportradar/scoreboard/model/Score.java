@@ -1,6 +1,6 @@
 package com.sportradar.scoreboard.model;
 
-import com.sportradar.scoreboard.exception.NegativeScoreException;
+import com.sportradar.scoreboard.model.exception.NegativeScoreException;
 
 import static java.util.Objects.requireNonNull;
 
