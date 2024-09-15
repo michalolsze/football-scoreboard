@@ -1,6 +1,6 @@
 package com.sportradar.scoreboard.testutils;
 
-import com.sportradar.scoreboard.util.MatchIdGenerator;
+import com.sportradar.scoreboard.match.MatchIdGenerator;
 
 import java.util.UUID;
 

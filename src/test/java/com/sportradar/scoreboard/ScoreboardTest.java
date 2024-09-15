@@ -5,10 +5,9 @@ import com.sportradar.scoreboard.model.Score;
 import com.sportradar.scoreboard.model.Team;
 import com.sportradar.scoreboard.repository.MatchRepository;
 import com.sportradar.scoreboard.testutils.FixedMatchIdGenerator;
-import com.sportradar.scoreboard.util.MatchIdGenerator;
+import com.sportradar.scoreboard.match.MatchFactory;
 import org.junit.jupiter.api.Test;
 
-import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -24,14 +23,16 @@ import static org.mockito.Mockito.*;
 
 public class ScoreboardTest {
 
-    private final Clock fixedClock = fixed(FIXED_START_TIME, UTC);
-    private final MatchIdGenerator fixedMatchIdGenerator = new FixedMatchIdGenerator(FIXED_MATCH_ID);
+    private final MatchFactory matchFactory = new MatchFactory(
+            fixed(FIXED_START_TIME, UTC),
+            new FixedMatchIdGenerator(FIXED_MATCH_ID)
+    );
     private final MatchRepository mockRepository = mock();
 
     private static final UUID FIXED_MATCH_ID = UUID.fromString("91b874d5-d331-4a64-a127-932c323241bb");
     private static final Instant FIXED_START_TIME = ofEpochMilli(1);
 
-    private final Scoreboard scoreboard = new Scoreboard(fixedClock, fixedMatchIdGenerator, mockRepository);
+    private final Scoreboard scoreboard = new Scoreboard(matchFactory, mockRepository);
 
     @Test
     public void shouldStartNewMatch() {
@@ -46,7 +47,7 @@ public class ScoreboardTest {
     }
 
     @Test
-    public void shouldUpdateScore() {
+    public void shouldUpdateScoreScore() {
         // given
         Score oldScore = new Score(1, 2);
         Score newScore = new Score(2, 3);
@@ -54,10 +55,11 @@ public class ScoreboardTest {
         when(mockRepository.findById(FIXED_MATCH_ID)).thenReturn(match);
 
         // when
-        scoreboard.update(FIXED_MATCH_ID, newScore);
+        scoreboard.updateScore(FIXED_MATCH_ID, newScore);
 
         // then
         Match expected = new Match(FIXED_MATCH_ID, ARGENTINA, AUSTRALIA, newScore, FIXED_START_TIME);
+        verify(mockRepository).findById(FIXED_MATCH_ID);
         verify(mockRepository).save(expected);
         verifyNoMoreInteractions(mockRepository);
     }
@@ -81,9 +83,7 @@ public class ScoreboardTest {
         Match uruguayItaly = new Match(FIXED_MATCH_ID, URUGUAY, ITALY, new Score(6, 6), ofEpochMilli(4));
         Match argentinaAustralia = new Match(FIXED_MATCH_ID, ARGENTINA, AUSTRALIA, new Score(3, 1), ofEpochMilli(5));
 
-        when(mockRepository.findAll()).thenReturn(
-                asList(mexicoCanada, spainBrazil, germanyFrance, uruguayItaly, argentinaAustralia)
-        );
+        when(mockRepository.findAll()).thenReturn(asList(mexicoCanada, spainBrazil, germanyFrance, uruguayItaly, argentinaAustralia));
 
         // when
         Iterable<Match> actual = scoreboard.getSummary();

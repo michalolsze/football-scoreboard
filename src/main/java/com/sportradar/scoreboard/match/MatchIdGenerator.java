@@ -1,4 +1,4 @@
-package com.sportradar.scoreboard.util;
+package com.sportradar.scoreboard.match;
 
 import java.util.UUID;
 

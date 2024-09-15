@@ -17,4 +17,8 @@ public record Score(Integer homeScore, Integer awayScore) {
             throw new NegativeScoreException();
         }
     }
+
+    public Integer getTotal() {
+        return homeScore + awayScore;
+    }
 }

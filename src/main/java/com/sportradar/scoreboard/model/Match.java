@@ -19,4 +19,12 @@ public record Match(UUID id, Team homeTeam, Team awayTeam, Score score, Instant 
             throw new NonUniqueTeamsException();
         }
     }
+
+    public Match updateScore(Score newScore) {
+        return new Match(id, homeTeam, awayTeam, newScore, startTime);
+    }
+
+    public Integer getTotalScore() {
+        return score.getTotal();
+    }
 }
