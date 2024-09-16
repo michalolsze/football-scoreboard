@@ -3,17 +3,14 @@ package com.sportradar.scoreboard.model;
 import com.sportradar.scoreboard.model.exception.NonUniqueTeamsException;
 import com.sportradar.scoreboard.model.testutils.InvalidInputTC;
 import com.sportradar.scoreboard.model.testutils.ValidInputTC;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
 import java.time.Instant;
-import java.util.UUID;
 import java.util.stream.Stream;
 
 import static java.time.Instant.ofEpochMilli;
-import static java.util.UUID.fromString;
 import static java.util.stream.Stream.of;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;

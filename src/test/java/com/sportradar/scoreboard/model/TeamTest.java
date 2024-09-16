@@ -6,17 +6,13 @@ import com.sportradar.scoreboard.model.testutils.ValidInputTC;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
-import java.util.UUID;
 import java.util.stream.Stream;
 
-import static java.util.UUID.fromString;
 import static java.util.stream.Stream.of;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 public class TeamTest {
-
-    private static final UUID TEAM_ID = fromString("a542a631-4496-4efb-8834-fa155ad832fd");
 
     @TestFactory
     public Stream<DynamicTest> shouldFailWhenInvalidParameters() {

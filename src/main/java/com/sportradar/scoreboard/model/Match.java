@@ -3,7 +3,6 @@ package com.sportradar.scoreboard.model;
 import com.sportradar.scoreboard.model.exception.NonUniqueTeamsException;
 
 import java.time.Instant;
-import java.util.UUID;
 
 import static java.util.Objects.requireNonNull;
 

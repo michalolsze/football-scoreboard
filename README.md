@@ -45,7 +45,7 @@ but as soon as I implemented [InMemoryCrudRepository](src/main/java/com/sportrad
 I used it in Scoreboard unit tests.
 - The repository is assumed to be concurrently safe.
 - There were no requirements regarding data validation and exceptions, but I decided to implement as much as I 
-could, based on my common-sense. Of course, all of this should discussed with the product owner/BA.
+could, based on my common-sense. Of course, all of this should be discussed with the product owner/BA.
 - Lastly: I have been coding more in Kotlin in the last few years and I miss the feature of `internal` visibility.
 More to read [here](https://kotlinlang.org/docs/visibility-modifiers.html#modules). Thanks to this classes like 
 [MatchFactory](src/main/java/com/sportradar/scoreboard/match/MatchFactory.java) or 
