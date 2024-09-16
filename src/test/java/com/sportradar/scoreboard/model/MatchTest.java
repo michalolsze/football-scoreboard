@@ -3,7 +3,9 @@ package com.sportradar.scoreboard.model;
 import com.sportradar.scoreboard.model.exception.NonUniqueTeamsException;
 import com.sportradar.scoreboard.model.testutils.InvalidInputTC;
 import com.sportradar.scoreboard.model.testutils.ValidInputTC;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
 import java.time.Instant;
@@ -18,9 +20,8 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 public class MatchTest {
 
-    private static final UUID MATCH_ID = fromString("dc630046-69c6-43ff-8e59-51299ac5a6a5");
-    private static final Team TEAM_A = new Team(fromString("a01a6621-91a8-4597-8a36-9de4e4ccf203"), "A");
-    private static final Team TEAM_B = new Team(fromString("24834bc1-6cc7-42bd-b601-18b1f65ac584"), "B");
+    private static final Team TEAM_A = new Team("A");
+    private static final Team TEAM_B = new Team("B");
     private static final Score SCORE = new Score();
     private static final Instant START_TIME = ofEpochMilli(1);
 
@@ -28,33 +29,33 @@ public class MatchTest {
     public Stream<DynamicTest> shouldFailWhenInvalidParameters() {
         return of(
                 new InvalidInputTC<>(
-                        "missing id",
-                        () -> new Match(null, TEAM_A, TEAM_B, SCORE, START_TIME),
-                        new NullPointerException("id cannot be null")
-                ),
-                new InvalidInputTC<>(
                         "missing homeTeam",
-                        () -> new Match(MATCH_ID, null, TEAM_B, SCORE, START_TIME),
+                        () -> new Match( null, TEAM_B, SCORE, START_TIME),
                         new NullPointerException("homeTeam cannot be null")
                 ),
                 new InvalidInputTC<>(
                         "missing awayTeam",
-                        () -> new Match(MATCH_ID, TEAM_A, null, SCORE, START_TIME),
+                        () -> new Match(TEAM_A, null, SCORE, START_TIME),
                         new NullPointerException("awayTeam cannot be null")
                 ),
                 new InvalidInputTC<>(
                         "missing score",
-                        () -> new Match(MATCH_ID, TEAM_A, TEAM_B, null, START_TIME),
+                        () -> new Match(TEAM_A, TEAM_B, null, START_TIME),
                         new NullPointerException("score cannot be null")
                 ),
                 new InvalidInputTC<>(
                         "missing startTime",
-                        () -> new Match(MATCH_ID, TEAM_A, TEAM_B, SCORE, null),
+                        () -> new Match(TEAM_A, TEAM_B, SCORE, null),
                         new NullPointerException("startTime cannot be null")
                 ),
                 new InvalidInputTC<>(
-                        "non unique teams",
-                        () -> new Match(MATCH_ID, TEAM_A, TEAM_A, SCORE, START_TIME),
+                        "non unique teams - same references",
+                        () -> new Match(TEAM_A, TEAM_A, SCORE, START_TIME),
+                        new NonUniqueTeamsException()
+                ),
+                new InvalidInputTC<>(
+                        "non unique teams - equal objects",
+                        () -> new Match(new Team("A"), new Team("A"), SCORE, START_TIME),
                         new NonUniqueTeamsException()
                 )
         ).map(tc ->
@@ -68,9 +69,46 @@ public class MatchTest {
     @TestFactory
     public Stream<DynamicTest> shouldNotFailWhenValidParameters() {
         return of(
-                new ValidInputTC<>("valid match", () -> new Match(MATCH_ID, TEAM_A, TEAM_B, SCORE, START_TIME))
+                new ValidInputTC<>("valid match", () -> new Match(TEAM_A, TEAM_B, SCORE, START_TIME))
         ).map(tc ->
                 dynamicTest("should not fail when " + tc.name(), () -> assertDoesNotThrow(tc.given()::get))
         );
+    }
+
+    @Test
+    public void shouldReturnMatchId() {
+        // given
+        Match match = new Match(TEAM_A, TEAM_B, SCORE, START_TIME);
+
+        // when
+        MatchId actual = match.getMatchId();
+
+        // then
+        MatchId expected = new MatchId(TEAM_A, TEAM_B);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shouldReturnTotalScore() {
+        // given
+        Match match = new Match(TEAM_A, TEAM_B, new Score(2, 1), START_TIME);
+
+        // when, then
+        assertEquals(3, match.getTotalScore());
+    }
+
+    @Test
+    public void shouldUpdateScore() {
+        // given
+        Match match = new Match(TEAM_A, TEAM_B, new Score(1,2), START_TIME);
+        Score newScore = new Score(2,3);
+
+        // when
+        Match actual = match.updateScore(newScore);
+
+        // then
+        Match expected = new Match(TEAM_A, TEAM_B, newScore, START_TIME);
+        assertEquals(expected, actual);
+        assertNotSame(match, actual);
     }
 }

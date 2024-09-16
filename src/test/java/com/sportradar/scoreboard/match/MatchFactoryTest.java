@@ -3,7 +3,6 @@ package com.sportradar.scoreboard.match;
 import com.sportradar.scoreboard.model.Match;
 import com.sportradar.scoreboard.model.Score;
 import com.sportradar.scoreboard.model.Team;
-import com.sportradar.scoreboard.testutils.FixedMatchIdGenerator;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -17,10 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MatchFactoryTest {
 
-    private final MatchFactory factory = new MatchFactory(
-            fixed(FIXED_START_TIME, UTC),
-            new FixedMatchIdGenerator(FIXED_MATCH_ID)
-    );
+    private final MatchFactory factory = new MatchFactory(fixed(FIXED_START_TIME, UTC));
 
     @Test
     public void shouldCreateNewMatch() {
@@ -28,14 +24,14 @@ public class MatchFactoryTest {
         Match actual = factory.create(HOME_TEAM, AWAY_TEAM);
 
         // then
-        Match expected = new Match(FIXED_MATCH_ID, HOME_TEAM, AWAY_TEAM, new Score(0,0), FIXED_START_TIME);
+        Match expected = new Match(HOME_TEAM, AWAY_TEAM, new Score(0,0), FIXED_START_TIME);
         assertEquals(expected, actual);
     }
 
     private static final Instant FIXED_START_TIME = ofEpochMilli(1);
     private static final UUID FIXED_MATCH_ID = fromString("38668d54-f151-4425-a11d-ef325c4e453c");
 
-    private static final Team HOME_TEAM = new Team(fromString("36cd7bd1-77b5-4b0f-a4ea-07153a281a57"), "Home");
-    private static final Team AWAY_TEAM = new Team(fromString("15f42041-fc5f-41bf-babf-623120898fee"), "Away");
+    private static final Team HOME_TEAM = new Team("Home");
+    private static final Team AWAY_TEAM = new Team("Away");
 
 }

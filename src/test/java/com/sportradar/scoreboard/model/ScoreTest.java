@@ -3,7 +3,9 @@ package com.sportradar.scoreboard.model;
 import com.sportradar.scoreboard.model.exception.NegativeScoreException;
 import com.sportradar.scoreboard.model.testutils.InvalidInputTC;
 import com.sportradar.scoreboard.model.testutils.ValidInputTC;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
 import java.util.stream.Stream;
@@ -59,5 +61,17 @@ public class ScoreTest {
         ).map(tc ->
                 dynamicTest("should not fail when " + tc.name(), () -> assertDoesNotThrow(tc.given()::get))
         );
+    }
+
+    @Test
+    public void shouldReturnTotal() {
+        // given
+        Score score = new Score(1,2);
+
+        // when
+        Integer actual = score.getTotal();
+
+        // then
+        assertEquals(3, actual);
     }
 }

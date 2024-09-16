@@ -9,14 +9,12 @@ import java.time.Clock;
 public class MatchFactory {
 
     private final Clock clock;
-    private final MatchIdGenerator idGenerator;
 
-    public MatchFactory(Clock clock, MatchIdGenerator idGenerator) {
+    public MatchFactory(Clock clock) {
         this.clock = clock;
-        this.idGenerator = idGenerator;
     }
 
     public Match create(Team home, Team away) {
-        return new Match(idGenerator.generate(), home, away, new Score(), clock.instant());
+        return new Match(home, away, new Score(), clock.instant());
     }
 }

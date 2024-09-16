@@ -1,8 +1,12 @@
 package com.sportradar.scoreboard.repository;
 
-public interface CrudRepository<ID, T> {
-    void delete(ID id);
-    void save(T t);
-    T findById(ID id);
-    Iterable<T> findAll();
+import com.sportradar.scoreboard.repository.exception.EntityExistsException;
+import com.sportradar.scoreboard.repository.exception.EntityNotFoundException;
+
+public interface CrudRepository<Id, Entity> {
+    void delete(Id id) throws EntityNotFoundException;
+    void insert(Id id, Entity entity) throws EntityExistsException;
+    void update(Id id, Entity entity) throws EntityNotFoundException;
+    Entity findById(Id id);
+    Iterable<Entity> findAll();
 }

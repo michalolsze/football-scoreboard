@@ -1,14 +1,19 @@
 package com.sportradar.scoreboard;
 
+import com.sportradar.scoreboard.match.exception.MatchAlreadyStartedException;
+import com.sportradar.scoreboard.match.exception.MatchNotFoundException;
 import com.sportradar.scoreboard.model.Match;
+import com.sportradar.scoreboard.model.MatchId;
 import com.sportradar.scoreboard.model.Score;
 import com.sportradar.scoreboard.model.Team;
-import com.sportradar.scoreboard.repository.MatchRepository;
+import com.sportradar.scoreboard.repository.CrudRepository;
 import com.sportradar.scoreboard.match.MatchFactory;
+import com.sportradar.scoreboard.repository.exception.EntityExistsException;
+import com.sportradar.scoreboard.repository.exception.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.UUID;
+import java.time.Clock;
 
 import static java.util.Comparator.comparing;
 import static java.util.stream.StreamSupport.stream;
@@ -18,35 +23,50 @@ public class Scoreboard {
     private static final Logger LOG = LogManager.getLogger();
 
     private final MatchFactory matchFactory;
-    private final MatchRepository repository;
+    private final CrudRepository<MatchId, Match> matchRepository;
 
-    public Scoreboard(MatchFactory matchFactory, MatchRepository repository) {
-        this.matchFactory = matchFactory;
-        this.repository = repository;
+    public Scoreboard(Clock clock, CrudRepository<MatchId, Match> matchRepository) {
+        this.matchFactory = new MatchFactory(clock);
+        this.matchRepository = matchRepository;
     }
 
-    public Match startMatch(Team home, Team away) {
+    public Match startMatch(Team home, Team away) throws MatchAlreadyStartedException{
         LOG.info(() -> "Starting match between " + home + " and " + away + ".");
         Match match = matchFactory.create(home, away);
-        repository.save(match);
+        try {
+            matchRepository.insert(match.getMatchId(), match);
+        } catch (EntityExistsException e) {
+            throw new MatchAlreadyStartedException(match.getMatchId(), e);
+        }
         return match;
     }
 
-    public void updateScore(UUID matchId, Score score) {
+    public void updateScore(MatchId matchId, Score score) throws MatchNotFoundException {
         LOG.info(() -> "Updating score: " + score + " for match with id: " + matchId + ".");
-        Match match = repository.findById(matchId);
+        Match match = matchRepository.findById(matchId);
+        if (match == null) {
+            throw new MatchNotFoundException(matchId);
+        }
         Match updated = match.updateScore(score);
-        repository.save(updated);
+        try {
+            matchRepository.update(updated.getMatchId(), updated);
+        } catch (EntityNotFoundException e) {
+            throw new MatchNotFoundException(matchId, e);
+        }
     }
 
-    public void finishMatch(UUID matchId) {
+    public void finishMatch(MatchId matchId) throws MatchNotFoundException {
         LOG.info(() -> "Finishing match with id: " + matchId + ".");
-        repository.delete(matchId);
+        try {
+            matchRepository.delete(matchId);
+        } catch (EntityNotFoundException e) {
+            throw new MatchNotFoundException(matchId, e);
+        }
     }
 
     public Iterable<Match> getSummary() {
         LOG.debug("Getting summary.");
-        return () -> stream(repository.findAll().spliterator(), false)
+        return () -> stream(matchRepository.findAll().spliterator(), false)
                 .sorted(comparing(Match::getTotalScore).thenComparing(Match::startTime).reversed())
                 .iterator();
     }

@@ -22,23 +22,18 @@ public class TeamTest {
     public Stream<DynamicTest> shouldFailWhenInvalidParameters() {
         return of(
                 new InvalidInputTC<>(
-                        "missing id",
-                        () -> new Team(null, "A"),
-                        new NullPointerException("id cannot be null")
-                ),
-                new InvalidInputTC<>(
                         "missing name",
-                        () -> new Team(TEAM_ID, null),
+                        () -> new Team(null),
                         new NullPointerException("name cannot be null")
                 ),
                 new InvalidInputTC<>(
                         "empty name",
-                        () -> new Team(TEAM_ID, ""),
+                        () -> new Team( ""),
                         new BlankTeamNameException()
                 ),
                 new InvalidInputTC<>(
                         "blank name",
-                        () -> new Team(TEAM_ID, " "),
+                        () -> new Team(" "),
                         new BlankTeamNameException()
                 )
         ).map(tc ->
@@ -52,7 +47,7 @@ public class TeamTest {
     @TestFactory
     public Stream<DynamicTest> shouldNotFailWhenValidParameters() {
         return of(
-                new ValidInputTC<>("non blank team name", () -> new Team(TEAM_ID, "A"))
+                new ValidInputTC<>("non blank team name", () -> new Team("A"))
         ).map(tc ->
                 dynamicTest("should not fail when " + tc.name(), () -> assertDoesNotThrow(tc.given()::get))
         );
